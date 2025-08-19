@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RashiVerse - AI Astrology Reading</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0c0c2e 0%, #1a1a3e 25%, #2d2d5f 50%, #1a1a3e 75%, #0c0c2e 100%);
+            min-height: 100vh;
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated starfield background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: sparkle 20s linear infinite;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        @keyframes sparkle {
+            from { transform: translateX(0); }
+            to { transform: translateX(200px); }
+        }
+
+        /* Floating celestial elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .moon {
+            position: absolute;
+            top: 10%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f5f5dc 0%, #e6e6d4 100%);
+            box-shadow: 0 0 30px rgba(245, 245, 220, 0.5);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .constellation {
+            position: absolute;
+            opacity: 0.7;
+            animation: twinkle 3s ease-in-out infinite alternate;
+        }
+
+        .constellation.c1 { top: 15%; left: 15%; }
+        .constellation.c2 { top: 20%; right: 20%; }
+        .constellation.c3 { bottom: 20%; left: 20%; }
+        .constellation.c4 { bottom: 15%; right: 15%; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.4; }
+            100% { opacity: 0.8; }
+        }
+
+        /* Main container styling */
+        .main-container {
+            position: relative;
+            z-index: 2;
+            padding: 2rem 0;
+        }
+
+        .hero-title {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            margin-bottom: 1rem;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 50px rgba(255, 215, 0, 0.3); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #c9c9f0;
+            margin-bottom: 3rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Card styling */
+        .mystical-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 25px;
+            box-shadow: 
+                0 8px 32px rgba(31, 38, 135, 0.37),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                0 0 50px rgba(255, 215, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mystical-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .mystical-card:hover::before {
+            left: 100%;
+        }
+
+        /* Form styling */
+        .mystical-form {
+            padding: 2.5rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            color: #e6e6fa;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mystical-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1rem;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .mystical-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            outline: none;
+            color: #ffffff;
+        }
+
+        .mystical-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .mystical-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Button styling */
+        .cosmic-btn {
+            background: linear-gradient(45deg, #4a148c, #7b1fa2, #9c27b0, #7b1fa2, #4a148c);
+            background-size: 300% 300%;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 30px rgba(123, 31, 162, 0.4);
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cosmic-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(123, 31, 162, 0.6);
+        }
+
+        .cosmic-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .cosmic-btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Result section styling */
+        .result-section {
+            display: none;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .zodiac-display {
+            text-align: center;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+            border-radius: 20px;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .zodiac-sign {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .zodiac-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: #ffd700;
+            margin-bottom: 1rem;
+        }
+
+        .zodiac-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .zodiac-detail {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .trait-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .trait-badge {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .reading-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            border-left: 5px solid #ffd700;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .reading-content {
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #e6e6fa;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .secondary-btn {
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .secondary-btn:hover {
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.2));
+            transform: translateY(-2px);
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        /* Loading animation */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 215, 0, 0.3);
+            border-top: 4px solid #ffd700;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error styling */
+        .error-message {
+            background: rgba(220, 53, 69, 0.2);
+            border: 2px solid #dc3545;
+            color: #ffb3ba;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .mystical-form {
+                padding: 1.5rem;
+            }
+            
+            .form-section {
+                padding: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* Privacy notice */
+        .privacy-notice {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #c9c9f0;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-elements">
+        <div class="moon"></div>
+        <div class="constellation c1">✦</div>
+        <div class="constellation c2">✧</div>
+        <div class="constellation c3">⋆</div>
+        <div class="constellation c4">✩</div>
+    </div>
+
+    <div class="main-container">
+        <div class="container">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <h1 class="hero-title">
+                    <i class="fas fa-moon"></i> RashiVerse
+                </h1>
+                <p class="hero-subtitle">
+                    <i class="fas fa-stars"></i> Unlock the mysteries of the cosmos through AI-powered astrology
+                </p>
+            </div>
+
+            <!-- Main Form -->
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="mystical-card">
+                        <form id="astrologyForm" class="mystical-form">
+                            <!-- Personal Information Section -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="fas fa-user-astronaut"></i>
+                                    Personal Details
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-signature"></i> Full Name
+                                        </label>
+                                        <input type="text" name="name" class="form-control mystical-input" 
+                                               placeholder="Enter your full name" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-calendar-star"></i> Date of Birth
+                                        </label>
+                                        <input type="date" name="dob" class="form-control mystical-input" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Birth Details Section -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="fas fa-globe-americas"></i>
+                                    Birth Coordinates
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-clock"></i> Time of Birth
+                                        </label>
+                                        <input type="time" name="tob" class="form-control mystical-input" required>
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle"></i> Precise timing enhances accuracy
+                                        </small>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-map-marked-alt"></i> Place of Birth
+                                        </label>
+                                        <input type="text" name="pob" class="form-control mystical-input" 
+                                               placeholder="City, Country" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Question Section -->
+                            <div class="form-section">
+                                <div class="section-title">
+                                    <i class="fas fa-crystal-ball"></i>
+                                    Your Cosmic Inquiry
+                                </div>
+                                <label class="form-label">
+                                    <i class="fas fa-magic"></i> What do the stars have in store for you?
+                                </label>
+                                <textarea name="question" class="form-control mystical-input mystical-textarea" 
+                                         placeholder="Ask about love, career, health, personal growth, or any area of life where you seek cosmic guidance..." 
+                                         required maxlength="500"></textarea>
+                                <small class="text-muted">
+                                    <i class="fas fa-pen-fancy"></i> The more specific your question, the more personalized your reading
+                                </small>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="cosmic-btn">
+                                    <i class="fas fa-sparkles"></i> Consult the Stars
+                                </button>
+                            </div>
+
+                            <div class="privacy-notice">
+                                <i class="fas fa-shield-alt"></i>
+                                Your cosmic journey is private and secure. We honor your trust and protect your celestial secrets.
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Section -->
+            <div class="loading" id="loadingSection">
+                <div class="mystical-card" style="padding: 3rem;">
+                    <div class="loading-spinner"></div>
+                    <h4><i class="fas fa-constellation"></i> The stars are aligning...</h4>
+                    <p id="loadingText">Consulting the cosmic energies for your personalized reading</p>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="result-section" id="resultSection">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="text-center mb-4">
+                            <h2 class="hero-title" style="font-size: 2.5rem;">
+                                <i class="fas fa-star-of-life"></i> Your Celestial Reading
+                            </h2>
+                        </div>
+
+                        <!-- Personal Info Display -->
+                        <div class="mystical-card mb-4">
+                            <div class="mystical-form">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <h3 class="section-title mb-3">
+                                            <i class="fas fa-user-astronaut"></i>
+                                            <span id="displayName"></span>
+                                        </h3>
+                                        <p><i class="fas fa-calendar-star"></i> <strong>Born:</strong> <span id="displayDob"></span> at <span id="displayTob"></span></p>
+                                        <p><i class="fas fa-map-marked-alt"></i> <strong>Location:</strong> <span id="displayPob"></span></p>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="zodiac-display">
+                                            <div class="zodiac-sign" id="zodiacSymbol"></div>
+                                            <div class="zodiac-name" id="zodiacName"></div>
+                                            <div class="zodiac-details" id="zodiacDetails"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Question Display -->
+                        <div class="reading-card">
+                            <h4 class="section-title">
+                                <i class="fas fa-question-circle"></i> Your Cosmic Question
+                            </h4>
+                            <div class="reading-content">
+                                <em id="displayQuestion"></em>
+                            </div>
+                        </div>
+
+                        <!-- AI Reading Display -->
+                        <div class="reading-card">
+                            <h4 class="section-title">
+                                <i class="fas fa-magic"></i> Celestial Wisdom
+                            </h4>
+                            <div class="reading-content" id="aiReading"></div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="secondary-btn" onclick="resetForm()">
+                                <i class="fas fa-redo"></i> Ask Another Question
+                            </button>
+                            <button class="secondary-btn" onclick="shareReading()">
+                                <i class="fas fa-share-alt"></i> Share Your Reading
+                            </button>
+                            <button class="secondary-btn" onclick="downloadReading()">
+                                <i class="fas fa-download"></i> Save Reading
+                            </button>
+                        </div>
+
+                        <div class="privacy-notice">
+                            <i class="fas fa-heart"></i>
+                            Remember, the stars guide but never command. Trust your intuition and let this reading illuminate your path forward.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Zodiac calculation and data
+        const zodiacData = {
+            "Capricorn ♑": {
+                symbol: "♑",
+                element: "Earth",
+                ruling_planet: "Saturn",
+                traits: ["Ambitious", "Disciplined", "Practical", "Patient"]
+            },
+            "Aquarius ♒": {
+                symbol: "♒",
+                element: "Air",
+                ruling_planet: "Uranus",
+                traits: ["Independent", "Innovative", "Humanitarian", "Eccentric"]
+            },
+            "Pisces ♓": {
+                symbol: "♓",
+                element: "Water",
+                ruling_planet: "Neptune",
+                traits: ["Intuitive", "Compassionate", "Artistic", "Dreamy"]
+            },
+            "Aries ♈": {
+                symbol: "♈",
+                element: "Fire",
+                ruling_planet: "Mars",
+                traits: ["Energetic", "Courageous", "Impulsive", "Leader"]
+            },
+            "Taurus ♉": {
+                symbol: "♉",
+                element: "Earth",
+                ruling_planet: "Venus",
+                traits: ["Reliable", "Patient", "Practical", "Sensual"]
+            },
+            "Gemini ♊": {
+                symbol: "♊",
+                element: "Air",
+                ruling_planet: "Mercury",
+                traits: ["Curious", "Adaptable", "Communicative", "Versatile"]
+            },
+            "Cancer ♋": {
+                symbol: "♋",
+                element: "Water",
+                ruling_planet: "Moon",
+                traits: ["Nurturing", "Intuitive", "Emotional", "Protective"]
+            },
+            "Leo ♌": {
+                symbol: "♌",
+                element: "Fire",
+                ruling_planet: "Sun",
+                traits: ["Confident", "Generous", "Creative", "Dramatic"]
+            },
+            "Virgo ♍": {
+                symbol: "♍",
+                element: "Earth",
+                ruling_planet: "Mercury",
+                traits: ["Analytical", "Perfectionist", "Helpful", "Practical"]
+            },
+            "Libra ♎": {
+                symbol: "♎",
+                element: "Air",
+                ruling_planet: "Venus",
+                traits: ["Balanced", "Diplomatic", "Charming", "Justice-seeking"]
+            },
+            "Scorpio ♏": {
+                symbol: "♏",
+                element: "Water",
+                ruling_planet: "Pluto",
+                traits: ["Intense", "Mysterious", "Passionate", "Transformative"]
+            },
+            "Sagittarius ♐": {
+                symbol: "♐",
+                element: "Fire",
+                ruling_planet: "Jupiter",
+                traits: ["Adventurous", "Optimistic", "Philosophical", "Free-spirited"]
+            }
+        };
+
+        function getZodiacSign(day, month) {
+            const zodiacDates = [
+                [20, "Capricorn ♑"], [19, "Aquarius ♒"], [20, "Pisces ♓"], [20, "Aries ♈"],
+                [21, "Taurus ♉"], [21, "Gemini ♊"], [22, "Cancer ♋"], [22, "Leo ♌"],
+                [22, "Virgo ♍"], [22, "Libra ♎"], [21, "Scorpio ♏"], [21, "Sagittarius ♐"]
+            ];
+            
+            if (month === 12 && day >= 22) return "Capricorn ♑";
+            if (month === 1 && day <= 19) return "Capricorn ♑";
+            
+            return zodiacDates[month - 1] ? zodiacDates[month - 1][1] : "Capricorn ♑";
+        }
+
+        // Updated loading messages
+        const loadingMessages = [
+            "Aligning planetary energies...",
+            "Consulting ancient wisdom...",
+            "Interpreting cosmic patterns...",
+            "Channeling celestial insights...",
+            "Decoding your stellar blueprint...",
+            "Harmonizing with universal frequencies...",
+            "Unlocking cosmic secrets..."
+        ];
+
+        let loadingMessageIndex = 0;
+        let loadingInterval;
+
+        function updateLoadingMessage() {
+            const loadingText = document.getElementById('loadingText');
+            if (loadingText) {
+                loadingText.textContent = loadingMessages[loadingMessageIndex];
+                loadingMessageIndex = (loadingMessageIndex + 1) % loadingMessages.length;
+            }
+        }
+
+        // Form submission - PROPERLY INTEGRATED WITH BACKEND
+        document.getElementById('astrologyForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Show loading
+            document.querySelector('.mystical-card').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'block';
+            
+            // Start loading message rotation
+            loadingInterval = setInterval(updateLoadingMessage, 2000);
+            updateLoadingMessage();
+            
+            // Get form data
+            const formData = new FormData(this);
+            
+            try {
+                // Make API call to Flask backend using the new JSON endpoint
+                const response = await fetch('/api/reading', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name: formData.get('name'),
+                        dob: formData.get('dob'),
+                        tob: formData.get('tob'),
+                        pob: formData.get('pob'),
+                        question: formData.get('question')
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                // Parse JSON response from Flask backend
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.error || 'Failed to generate reading');
+                }
+
+                // Extract data from successful response
+                const readingData = result.reading;
+                const data = {
+                    name: readingData.name,
+                    dob: formData.get('dob'), // Keep original format for date processing
+                    tob: readingData.birth_time,
+                    pob: readingData.birth_place,
+                    question: readingData.question
+                };
+
+                // Calculate zodiac
+                const dobDate = new Date(data.dob);
+                const zodiacSign = getZodiacSign(dobDate.getDate(), dobDate.getMonth() + 1);
+                const zodiac = zodiacData[zodiacSign];
+
+                // Get the actual AI reading from backend
+                const aiReading = readingData.cosmic_guidance;
+
+                // Stop loading animation
+                clearInterval(loadingInterval);
+                displayResults(data, zodiacSign, zodiac, aiReading);
+
+            } catch (error) {
+                console.error('Error:', error);
+                clearInterval(loadingInterval);
+                
+                // Show error message
+                document.getElementById('loadingSection').style.display = 'none';
+                showErrorMessage(`Unable to connect to the cosmic servers: ${error.message}. Please try again later.`);
+            }
+        });
+
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Cosmic Interference:</strong> ${message}
+                <br><br>
+                <button class="secondary-btn" onclick="resetForm()" style="border: 1px solid #dc3545; margin-top: 1rem;">
+                    <i class="fas fa-redo"></i> Try Again
+                </button>
+            `;
+            
+            const container = document.querySelector('.container');
+            container.appendChild(errorDiv);
+            
+            errorDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayResults(data, zodiacSign, zodiac, aiReading) {
+            // Hide loading
+            document.getElementById('loadingSection').style.display = 'none';
+            
+            // Populate result data
+            document.getElementById('displayName').textContent = data.name;
+            document.getElementById('displayDob').textContent = new Date(data.dob).toLocaleDateString('en-US', {
+                year: 'numeric', month: 'long', day: 'numeric'
+            });
+            document.getElementById('displayTob').textContent = data.tob;
+            document.getElementById('displayPob').textContent = data.pob;
+            document.getElementById('displayQuestion').textContent = data.question;
+
+            // Zodiac info
+            document.getElementById('zodiacSymbol').textContent = zodiac.symbol;
+            document.getElementById('zodiacName').textContent = zodiacSign;
+            
+            const zodiacDetails = document.getElementById('zodiacDetails');
+            zodiacDetails.innerHTML = `
+                <div class="zodiac-detail">
+                    <strong>Element</strong><br>
+                    <span style="color: #ffd700;">${zodiac.element}</span>
+                </div>
+                <div class="zodiac-detail">
+                    <strong>Ruling Planet</strong><br>
+                    <span style="color: #ffd700;">${zodiac.ruling_planet}</span>
+                </div>
+                <div class="zodiac-detail" style="grid-column: 1 / -1;">
+                    <strong>Key Traits</strong><br>
+                    <div class="trait-container">
+                        ${zodiac.traits.map(trait => `<span class="trait-badge">${trait}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            // Display the actual AI reading from backend
+            document.getElementById('aiReading').innerHTML = aiReading.replace(/\n/g, '<br>');
+
+            // Show results
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            // Clear any error messages
+            const errorMessages = document.querySelectorAll('.error-message');
+            errorMessages.forEach(msg => msg.remove());
+            
+            // Reset sections
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('loadingSection').style.display = 'none';
+            document.querySelector('.mystical-card').style.display = 'block';
+            
+            // Clear form
+            document.getElementById('astrologyForm').reset();
+            
+            // Clear loading interval if running
+            if (loadingInterval) {
+                clearInterval(loadingInterval);
+            }
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function shareReading() {
+            const readingText = document.getElementById('aiReading').textContent;
+            const name = document.getElementById('displayName').textContent;
+            const zodiac = document.getElementById('zodiacName').textContent;
+            
+            const shareData = {
+                title: `${name}'s Astrology Reading from RashiVerse`,
+                text: `🔮 I just received an amazing ${zodiac} reading from RashiVerse! ${readingText.substring(0, 100)}... ✨`,
+                url: window.location.href
+            };
+
+            if (navigator.share) {
+                navigator.share(shareData).catch(err => console.log('Error sharing:', err));
+            } else {
+                // Fallback for browsers without native sharing
+                const textToShare = `${shareData.title}\n\n${shareData.text}\n\n${shareData.url}`;
+                navigator.clipboard.writeText(textToShare).then(() => {
+                    showNotification('✨ Reading copied to clipboard! Share your cosmic wisdom with others.');
+                }).catch(() => {
+                    showNotification('Unable to copy to clipboard. Please share manually.');
+                });
+            }
+        }
+
+        function downloadReading() {
+            const name = document.getElementById('displayName').textContent;
+            const dob = document.getElementById('displayDob').textContent;
+            const tob = document.getElementById('displayTob').textContent;
+            const pob = document.getElementById('displayPob').textContent;
+            const zodiac = document.getElementById('zodiacName').textContent;
+            const question = document.getElementById('displayQuestion').textContent;
+            const reading = document.getElementById('aiReading').textContent;
+
+            const content = `
+🔮 RashiVerse - Personal Astrology Reading 🔮
+
+👤 Name: ${name}
+📅 Date of Birth: ${dob}
+⏰ Time of Birth: ${tob}
+📍 Place of Birth: ${pob}
+⭐ Zodiac Sign: ${zodiac}
+
+❓ Your Question:
+${question}
+
+🌟 Celestial Guidance:
+${reading}
+
+✨ Generated by RashiVerse AI Astrology
+🌙 Remember: The stars guide, but you choose your path.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Visit RashiVerse for more cosmic insights!
+`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${name.replace(/\s+/g, '_')}_Astrology_Reading_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('📄 Your reading has been downloaded successfully!');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(45deg, #4a148c, #7b1fa2);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 10px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                z-index: 9999;
+                animation: slideIn 0.5s ease;
+                max-width: 300px;
+            `;
+            notification.innerHTML = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease forwards';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 500);
+            }, 3000);
+        }
+
+        // Add notification animations
+        const notificationStyles = `
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }`;
+        
+        const notificationStyleSheet = document.createElement('style');
+        notificationStyleSheet.textContent = notificationStyles;
+        document.head.appendChild(notificationStyleSheet);
+
+        // Add some interactive star effects
+        function createFallingStars() {
+            const star = document.createElement('div');
+            star.innerHTML = '✦';
+            star.style.position = 'fixed';
+            star.style.color = '#ffd700';
+            star.style.fontSize = '20px';
+            star.style.left = Math.random() * 100 + 'vw';
+            star.style.top = '-50px';
+            star.style.zIndex = '1';
+            star.style.animation = 'fall 3s linear forwards';
+            star.style.pointerEvents = 'none';
+            
+            document.body.appendChild(star);
+            
+            setTimeout(() => {
+                star.remove();
+            }, 3000);
+        }
+
+        // Add falling stars animation
+        const fallKeyframes = `
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }`;
+        
+        const style = document.createElement('style');
+        style.textContent = fallKeyframes;
+        document.head.appendChild(style);
+
+        // Create falling stars periodically
+        setInterval(createFallingStars, 3000);
+
+        // Add smooth hover effects for form inputs
+        document.querySelectorAll('.mystical-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add cosmic particle effect on button click
+        document.querySelector('.cosmic-btn').addEventListener('click', function(e) {
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.innerHTML = '✨';
+                    particle.style.position = 'absolute';
+                    particle.style.left = e.pageX - 10 + 'px';
+                    particle.style.top = e.pageY - 10 + 'px';
+                    particle.style.fontSize = '16px';
+                    particle.style.pointerEvents = 'none';
+                    particle.style.zIndex = '9999';
+                    particle.style.animation = `sparkleOut 0.8s ease-out forwards`;
+                    
+                    document.body.appendChild(particle);
+                    
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 800);
+                }, i * 100);
+            }
+        });
+
+        // Add sparkle out animation
+        const sparkleKeyframes = `
+        @keyframes sparkleOut {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0) rotate(180deg) translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 - 50}px);
+                opacity: 0;
+            }
+        }`;
+        
+        const sparkleStyle = document.createElement('style');
+        sparkleStyle.textContent = sparkleKeyframes;
+        document.head.appendChild(sparkleStyle);
+
+        // Constellation cursor effect
+        document.addEventListener('mousemove', function(e) {
+            if (Math.random() < 0.1) { // 10% chance to create a star
+                const star = document.createElement('div');
+                star.innerHTML = '⋆';
+                star.style.position = 'fixed';
+                star.style.left = e.clientX + 'px';
+                star.style.top = e.clientY + 'px';
+                star.style.color = 'rgba(255, 215, 0, 0.6)';
+                star.style.fontSize = '12px';
+                star.style.pointerEvents = 'none';
+                star.style.zIndex = '1';
+                star.style.animation = 'fadeOut 2s ease-out forwards';
+                
+                document.body.appendChild(star);
+                
+                setTimeout(() => {
+                    star.remove();
+                }, 2000);
+            }
+        });
+
+        // Add fade out animation
+        const fadeKeyframes = `
+        @keyframes fadeOut {
+            0% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.5) rotate(180deg);
+            }
+        }`;
+        
+        const fadeStyle = document.createElement('style');
+        fadeStyle.textContent = fadeKeyframes;
+        document.head.appendChild(fadeStyle);
+    </script>
+</body>
+</html>

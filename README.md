@@ -39,7 +39,7 @@ ed characteristics
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/rashiverse.git
+   git clone https://github.com/JayantDethe26/AiAstrologer.git
    cd rashiverse
    ```
 
@@ -72,7 +72,7 @@ ed characteristics
 
 1. **Clone and navigate to project**
    ```bash
-   git clone https://github.com/yourusername/rashiverse.git
+   git clone https://github.com/JayantDethe26/AiAstrologer.git
    cd rashiverse
    ```
 
